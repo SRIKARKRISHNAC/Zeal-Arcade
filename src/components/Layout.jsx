@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
-import { LogOut, Coins, Gift } from 'lucide-react';
+import { LogOut, Coins, Gift, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Layout = ({ children, showHeader = true }) => {
@@ -41,6 +41,9 @@ const Layout = ({ children, showHeader = true }) => {
                                         <Gift size={18} /> Refer
                                     </button>
                                 )}
+                                <Link to="/rewards" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'linear-gradient(135deg, #9b59b6, #8e44ad)' }}>
+                                    <Sparkles size={18} /> Rewards
+                                </Link>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 215, 0, 0.1)', padding: '0.5rem 1rem', borderRadius: '20px', border: '1px solid rgba(255, 215, 0, 0.2)' }}>
                                     <Coins size={18} color="#FFD700" />
                                     <span style={{ fontWeight: 800, color: '#FFD700' }}>{balance.toLocaleString()}</span>
