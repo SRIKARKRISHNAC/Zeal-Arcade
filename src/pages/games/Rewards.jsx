@@ -4,7 +4,7 @@ import { useGame } from '../context/GameContext';
 import { Gift, Sparkles, ShoppingBag, CreditCard, Ticket } from 'lucide-react';
 
 const Rewards = () => {
-    const { balance, updateBalance } = useGame();
+    const { user, balance, updateBalance } = useGame();
     const [activeTab, setActiveTab] = useState('lucky');
     const [scratchState, setScratchState] = useState('unscratched'); // unscratched, scratching, scratched
     const [scratchReward, setScratchReward] = useState(0);
@@ -89,6 +89,23 @@ const Rewards = () => {
                     </button>
                     <button onClick={() => setActiveTab('buy')} className={activeTab === 'buy' ? 'tab-btn active' : 'tab-btn'}>
                         <CreditCard size={18} /> Buy Coins
+                    </button>
+                    <button 
+                        onClick={() => {
+                            const lastClaim = localStorage.getItem(`lastDaily_${user}`);
+                            if (!lastClaim || (Date.now() - parseInt(lastClaim)) > 24 * 60 * 60 * 1000) {
+                                updateBalance(100);
+                                localStorage.setItem(`lastDaily_${user}`, Date.now().toString());
+                                alert("Daily bonus of 100 Z Coins claimed! 🎁");
+                            } else {
+                                const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (Date.now() - parseInt(lastClaim))) / (1000 * 60 * 60));
+                                alert(`Daily bonus already claimed! Come back in ${hoursLeft} hours.`);
+                            }
+                        }} 
+                        className="tab-btn" 
+                        style={{ background: 'linear-gradient(135deg, #FFD700, #DAA520)', color: '#000' }}
+                    >
+                        <Gift size={18} /> Daily Bonus
                     </button>
                 </div>
 
