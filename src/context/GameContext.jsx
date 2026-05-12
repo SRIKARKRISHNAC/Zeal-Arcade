@@ -21,7 +21,7 @@ export const GameProvider = ({ children }) => {
     const login = (username) => {
         setUser(username);
         if (!localStorage.getItem('zealux_balance')) {
-            setBalance(1000); // Starter balance
+            setBalance(100); // Starter balance
         }
     };
 
