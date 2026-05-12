@@ -25,15 +25,8 @@ export const GameProvider = ({ children }) => {
             }
         } else {
             localStorage.removeItem('zealUser');
-            setBalance(0);
         }
     }, [user]);
-
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem(`zealux_balance_${user}`, balance);
-        }
-    }, [balance, user]);
 
     const login = (username) => {
         setUser(username);
@@ -45,7 +38,13 @@ export const GameProvider = ({ children }) => {
     };
 
     const updateBalance = (amount) => {
-        setBalance(prev => prev + amount);
+        setBalance(prev => {
+            const newBalance = prev + amount;
+            if (user) {
+                localStorage.setItem(`zealux_balance_${user}`, newBalance);
+            }
+            return newBalance;
+        });
     };
 
     return (
