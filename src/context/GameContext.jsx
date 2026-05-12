@@ -4,20 +4,28 @@ const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
     const [user, setUser] = useState(localStorage.getItem('zealUser'));
-    const [balance, setBalance] = useState(0);
+    const [balance, setBalance] = useState(() => {
+        const initialUser = localStorage.getItem('zealUser');
+        if (initialUser) {
+            const saved = localStorage.getItem(`zealux_balance_${initialUser}`);
+            return saved !== null ? parseInt(saved) : 100;
+        }
+        return 0;
+    });
 
     useEffect(() => {
         if (user) {
             localStorage.setItem('zealUser', user);
-            const savedBalance = localStorage.getItem(`zealux_balance_${user}`);
-            if (savedBalance !== null) {
-                setBalance(parseInt(savedBalance));
-            } else {
-                setBalance(100); // Default for truly new user
+            const saved = localStorage.getItem(`zealux_balance_${user}`);
+            if (saved === null) {
+                setBalance(100);
                 localStorage.setItem(`zealux_balance_${user}`, '100');
+            } else {
+                setBalance(parseInt(saved));
             }
         } else {
             localStorage.removeItem('zealUser');
+            setBalance(0);
         }
     }, [user]);
 
