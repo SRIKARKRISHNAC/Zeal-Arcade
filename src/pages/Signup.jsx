@@ -14,7 +14,6 @@ const Signup = () => {
             localStorage.removeItem('snake_highscore');
             localStorage.removeItem('arrowsLevel');
             login(username);
-            updateBalance(1000); // New user bonus
             navigate('/arcade');
         }
     };
