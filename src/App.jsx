@@ -14,6 +14,7 @@ import Ludo from './pages/games/Ludo';
 import FlappyBird from './pages/games/FlappyBird';
 import Arrows from './pages/games/Arrows';
 import Pacman from './pages/games/Pacman';
+import Rewards from './pages/Rewards';
 
 const ProtectedRoute = ({ children }) => {
     const { user } = useGame();
@@ -32,6 +33,11 @@ function App() {
                     <Route path="/arcade" element={
                         <ProtectedRoute>
                             <Arcade />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/rewards" element={
+                        <ProtectedRoute>
+                            <Rewards />
                         </ProtectedRoute>
                     } />
                     <Route path="/games/snake" element={
