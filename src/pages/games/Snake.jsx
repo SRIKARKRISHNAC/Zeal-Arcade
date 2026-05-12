@@ -151,7 +151,7 @@ const Snake = () => {
                                     height: '20px',
                                     background: isSnakeHead ? '#6c3483' :
                                         isSnakeBody ? '#4a235a' : 'transparent',
-                                    border: isSnakeHead || isSnakeBody ? '1px solid #1a0a2e' : 'none',
+                                    border: isSnakeHead || isSnakeBody ? '1px solid #1a0a2e' : '1px solid rgba(155, 89, 182, 0.1)',
                                     borderRadius: isSnakeHead ? '6px' : isSnakeBody ? '2px' : '0',
                                     position: 'relative',
                                     display: 'flex',
@@ -171,7 +171,7 @@ const Snake = () => {
                                             background: '#27ae60',
                                             borderRadius: '50%',
                                             position: 'relative',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                            boxShadow: '0 0 10px rgba(39, 174, 96, 0.4), 0 2px 4px rgba(0,0,0,0.2)'
                                         }}>
                                             {/* Apple Stem */}
                                             <div style={{ position: 'absolute', width: '2px', height: '6px', background: '#1e8449', top: '-4px', left: '50%', transform: 'translateX(-50%) rotate(10deg)' }} />
