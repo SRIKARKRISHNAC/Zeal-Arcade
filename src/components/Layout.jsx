@@ -31,7 +31,7 @@ const Layout = ({ children, showHeader = true }) => {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                             <Link to="/arcade" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                 <img src="/logo.png" alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '12px' }} />
-                                <h1 className="logo" style={{ fontSize: '1.5rem', margin: 0 }}>Zeal <span style={{ color: '#14B481' }}>Arcade</span></h1>
+                                <h1 className="logo" style={{ fontSize: '1.5rem', margin: 0 }}>Zeal <span style={{ color: '#9b59b6' }}>Arcade</span></h1>
                             </Link>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
