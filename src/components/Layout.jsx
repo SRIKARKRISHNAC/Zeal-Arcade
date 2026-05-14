@@ -32,7 +32,7 @@ const Layout = ({ children, showHeader = true }) => {
                             <Link to="/arcade" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                 <img src="/logo.png" alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '12px' }} />
                                 <h1 className="logo" style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center' }}>
-                                    Zeal <img src="/favicon.svg" alt="Arcade" className="arcade-logo-loop" style={{ width: '30px', height: '30px' }} />
+                                    Zeal <video src="/logo-video.mp4" autoPlay loop muted playsInline style={{ width: '40px', height: '40px', borderRadius: '12px', marginLeft: '10px', boxShadow: '0 0 15px rgba(155, 89, 182, 0.3)' }} />
                                 </h1>
                             </Link>
 
