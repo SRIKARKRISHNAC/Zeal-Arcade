@@ -7,11 +7,6 @@ const Welcome = () => {
     const { user } = useGame();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user) {
-            navigate('/arcade');
-        }
-    }, [user, navigate]);
 
     return (
         <Layout showHeader={false}>
@@ -22,8 +17,14 @@ const Welcome = () => {
                     The premium web gaming platform. Experience classic games reimagined with a modern, glassmorphism aesthetic.
                 </p>
                 <div className="cta-buttons" style={{ display: 'flex', gap: '1.5rem' }}>
-                    <Link to="/signup" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', textDecoration: 'none' }}>Get Started</Link>
-                    <Link to="/login" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', textDecoration: 'none', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-primary)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>Log In</Link>
+                    {user ? (
+                        <Link to="/arcade" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', textDecoration: 'none' }}>Explore Arcade</Link>
+                    ) : (
+                        <>
+                            <Link to="/signup" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', textDecoration: 'none' }}>Get Started</Link>
+                            <Link to="/login" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', textDecoration: 'none', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-primary)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>Log In</Link>
+                        </>
+                    )}
                 </div>
             </div>
         </Layout>
