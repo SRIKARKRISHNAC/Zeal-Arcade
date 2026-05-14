@@ -160,4 +160,13 @@ body::before {
     backdrop-filter: blur(12px);
     padding: 2rem;
 }
+@keyframes logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
+.arcade-logo-loop {
+    animation: logo-spin 10s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
