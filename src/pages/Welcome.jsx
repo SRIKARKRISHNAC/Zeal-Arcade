@@ -13,7 +13,7 @@ const Welcome = () => {
             <div className="hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
                 <img src="/logo.png" alt="Zeal Arcade Logo" className="hero-logo" style={{ width: '150px', height: '150px', objectFit: 'contain', borderRadius: '30px', boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)', marginBottom: '2rem' }} />
                 <h1 className="logo" style={{ fontSize: '5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    Zeal <img src="/favicon.svg" alt="Arcade" className="arcade-logo-loop" style={{ width: '80px', height: '80px' }} />
+                    Zeal <video src="/logo-video.mp4" autoPlay loop muted playsInline style={{ width: '120px', height: '120px', borderRadius: '24px', marginLeft: '20px', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)' }} />
                 </h1>
                 <p style={{ fontSize: '1.5rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
                     The premium web gaming platform. Experience classic games reimagined with a modern, glassmorphism aesthetic.
