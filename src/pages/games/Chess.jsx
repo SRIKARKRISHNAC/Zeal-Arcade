@@ -19,6 +19,7 @@ const Chess = () => {
     const [isGameOver, setIsGameOver] = useState(false);
     const [isSearching, setIsSearching] = useState(true);
     const [possibleMoves, setPossibleMoves] = useState([]);
+    const [difficulty, setDifficulty] = useState('Medium');
 
     useEffect(() => {
         const timer = setTimeout(() => setIsSearching(false), 2000);
@@ -55,18 +56,89 @@ const Chess = () => {
         }
     };
 
+    const PIECE_VALUES = { p: 10, n: 30, b: 30, r: 50, q: 90, k: 900 };
+
+    const evaluateBoard = (gameInstance) => {
+        let score = 0;
+        const boardState = gameInstance.board();
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                const piece = boardState[r][c];
+                if (piece) {
+                    const centerBonus = (r >= 3 && r <= 4 && c >= 3 && c <= 4) ? 1 : 0;
+                    const val = PIECE_VALUES[piece.type] + centerBonus;
+                    score += piece.color === 'w' ? val : -val;
+                }
+            }
+        }
+        return score;
+    };
+
+    const getBestMove = (gameInstance, depth) => {
+        const moves = gameInstance.moves({ verbose: true });
+        if (moves.length === 0) return null;
+        if (depth === 0) return moves[Math.floor(Math.random() * moves.length)];
+
+        let bestMove = null;
+        let bestValue = Infinity;
+
+        const minimax = (gameCopy, depthLeft, alpha, beta, isMaximizing) => {
+            if (depthLeft === 0 || gameCopy.isGameOver()) return evaluateBoard(gameCopy);
+            const possibleMoves = gameCopy.moves({ verbose: true });
+            
+            if (isMaximizing) {
+                let maxEval = -Infinity;
+                for (let move of possibleMoves) {
+                    gameCopy.move(move);
+                    const ev = minimax(gameCopy, depthLeft - 1, alpha, beta, false);
+                    gameCopy.undo();
+                    maxEval = Math.max(maxEval, ev);
+                    alpha = Math.max(alpha, ev);
+                    if (beta <= alpha) break;
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (let move of possibleMoves) {
+                    gameCopy.move(move);
+                    const ev = minimax(gameCopy, depthLeft - 1, alpha, beta, true);
+                    gameCopy.undo();
+                    minEval = Math.min(minEval, ev);
+                    beta = Math.min(beta, ev);
+                    if (beta <= alpha) break;
+                }
+                return minEval;
+            }
+        };
+
+        moves.sort(() => Math.random() - 0.5);
+        for (let move of moves) {
+            gameInstance.move(move);
+            const boardValue = minimax(gameInstance, depth - 1, -Infinity, Infinity, true);
+            gameInstance.undo();
+            
+            if (boardValue < bestValue) {
+                bestValue = boardValue;
+                bestMove = move;
+            }
+        }
+        return bestMove || moves[0];
+    };
+
     const makeAIMove = (currentGame) => {
         if (currentGame.isGameOver()) return;
 
-        const moves = currentGame.moves();
-        if (moves.length === 0) return;
+        let depth = 0;
+        if (difficulty === 'Medium') depth = 1;
+        if (difficulty === 'Hard') depth = 3;
 
-        const move = moves[Math.floor(Math.random() * moves.length)];
-        currentGame.move(move);
-
-        setGame(new ChessJS(currentGame.fen()));
-        setBoard(currentGame.board());
-        updateStatus(currentGame);
+        const move = getBestMove(currentGame, depth);
+        if (move) {
+            currentGame.move(move);
+            setGame(new ChessJS(currentGame.fen()));
+            setBoard(currentGame.board());
+            updateStatus(currentGame);
+        }
     };
 
     const handleSquareClick = (r, c) => {
@@ -85,15 +157,25 @@ const Chess = () => {
 
             // Try to move
             try {
+                let targetSquare = square;
+                const selectedPiece = game.get(selectedSquare);
+                // Allow castling by clicking the Rook
+                if (selectedPiece && selectedPiece.type === 'k' && piece && piece.type === 'r' && piece.color === selectedPiece.color) {
+                    if (square === 'h1' && selectedSquare === 'e1') targetSquare = 'g1';
+                    if (square === 'a1' && selectedSquare === 'e1') targetSquare = 'c1';
+                    if (square === 'h8' && selectedSquare === 'e8') targetSquare = 'g8';
+                    if (square === 'a8' && selectedSquare === 'e8') targetSquare = 'c8';
+                }
+
                 // If promotion is possible, auto-promote to queen for simplicity
                 const moves = game.moves({ square: selectedSquare, verbose: true });
-                const moveObj = moves.find(m => m.to === square);
+                const moveObj = moves.find(m => m.to === targetSquare);
                 
                 if (moveObj) {
                     const gameCopy = new ChessJS(game.fen());
                     gameCopy.move({
                         from: selectedSquare,
-                        to: square,
+                        to: targetSquare,
                         promotion: 'q'
                     });
 
@@ -259,7 +341,28 @@ const Chess = () => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                    <select 
+                        value={difficulty} 
+                        onChange={(e) => setDifficulty(e.target.value)}
+                        style={{
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '8px',
+                            background: 'rgba(155, 89, 182, 0.1)',
+                            border: '1px solid rgba(155, 89, 182, 0.3)',
+                            color: 'var(--accent-primary)',
+                            outline: 'none',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            backdropFilter: 'blur(10px)'
+                        }}
+                    >
+                        <option value="Easy" style={{ background: '#1a1a1a' }}>Easy</option>
+                        <option value="Medium" style={{ background: '#1a1a1a' }}>Medium</option>
+                        <option value="Hard" style={{ background: '#1a1a1a' }}>Hard</option>
+                    </select>
+
                     <button onClick={resetGame} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <RotateCcw size={18} /> New Game
                     </button>
