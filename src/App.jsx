@@ -17,8 +17,8 @@ import Pacman from './pages/games/Pacman';
 import SeaBattle from './pages/games/SeaBattle';
 import PingPong from './pages/games/PingPong';
 import HandSlap from './pages/games/HandSlap';
-import RPS from './pages/games/RPS';
-import AirHockey from './pages/games/AirHockey';
+import RPS from './pages/games/RSP';
+import AirHockey from './pages/games/AirHocky';
 import Chess from './pages/games/Chess';
 import Rewards from './pages/Rewards';
 
