@@ -5,14 +5,17 @@ import Layout from '../components/Layout';
 
 const Login = () => {
     const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const { login } = useGame();
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (username.trim()) {
+        if (username === 'testuser' && password === 'test123') {
             login(username);
             navigate('/arcade');
+        } else {
+            alert("Invalid credentials! Please use:\nUsername: testuser\nPassword: test123");
         }
     };
 
@@ -32,6 +35,25 @@ const Login = () => {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="Enter your username"
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '1rem', 
+                                    borderRadius: '12px', 
+                                    border: '1px solid var(--card-border)',
+                                    background: 'rgba(155, 89, 182, 0.1)',
+                                    color: 'var(--text-primary)',
+                                    fontFamily: 'inherit'
+                                }}
+                                required
+                            />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Password</label>
+                            <input 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
                                 style={{ 
                                     width: '100%', 
                                     padding: '1rem', 
