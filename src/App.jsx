@@ -14,6 +14,12 @@ import Ludo from './pages/games/Ludo';
 import FlappyBird from './pages/games/FlappyBird';
 import Arrows from './pages/games/Arrows';
 import Pacman from './pages/games/Pacman';
+import SeaBattle from './pages/games/SeaBattle';
+import PingPong from './pages/games/PingPong';
+import HandSlap from './pages/games/HandSlap';
+import RPS from './pages/games/RPS';
+import AirHockey from './pages/games/AirHockey';
+import Chess from './pages/games/Chess';
 import Rewards from './pages/Rewards';
 
 const ProtectedRoute = ({ children }) => {
@@ -83,6 +89,36 @@ function App() {
                     <Route path="/games/pacman" element={
                         <ProtectedRoute>
                             <Pacman />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/sea-battle" element={
+                        <ProtectedRoute>
+                            <SeaBattle />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/ping-pong" element={
+                        <ProtectedRoute>
+                            <PingPong />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/hand-slap" element={
+                        <ProtectedRoute>
+                            <HandSlap />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/rps" element={
+                        <ProtectedRoute>
+                            <RPS />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/air-hockey" element={
+                        <ProtectedRoute>
+                            <AirHockey />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/games/chess" element={
+                        <ProtectedRoute>
+                            <Chess />
                         </ProtectedRoute>
                     } />
                 </Routes>
