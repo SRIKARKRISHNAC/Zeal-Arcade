@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Chess as ChessJS } from 'chess.js';
 import GameWrapper from '../../components/GameWrapper';
 import { useGame } from '../../context/GameContext';
 import { RotateCcw } from 'lucide-react';
 import boardImg from '../../assets/chess board.jpg';
-
-const INITIAL_BOARD = [
-    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-    ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
-];
 
 const PIECE_ICONS = {
     'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
@@ -22,176 +12,137 @@ const PIECE_ICONS = {
 
 const Chess = () => {
     const { updateBalance } = useGame();
-    const [board, setBoard] = useState(INITIAL_BOARD);
-    const [selected, setSelected] = useState(null);
-    const [turn, setTurn] = useState('white');
+    const [game, setGame] = useState(new ChessJS());
+    const [board, setBoard] = useState(game.board());
+    const [selectedSquare, setSelectedSquare] = useState(null);
     const [status, setStatus] = useState("Your turn (White)");
     const [isGameOver, setIsGameOver] = useState(false);
     const [isSearching, setIsSearching] = useState(true);
+    const [possibleMoves, setPossibleMoves] = useState([]);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsSearching(false), 2000);
         return () => clearTimeout(timer);
     }, []);
 
-    const isValidMove = (fromR, fromC, toR, toC, boardState) => {
-        const piece = boardState[fromR][fromC];
-        const target = boardState[toR][toC];
-        const color = piece === piece.toUpperCase() ? 'white' : 'black';
-
-        // Cannot capture own piece
-        if (target && (target === target.toUpperCase() ? 'white' : 'black') === color) return false;
-
-        const dr = toR - fromR;
-        const dc = toC - fromC;
-        const absDr = Math.abs(dr);
-        const absDc = Math.abs(dc);
-
-        const p = piece.toLowerCase();
-
-        if (p === 'p') {
-            const dir = color === 'white' ? -1 : 1;
-            // Standard move
-            if (dc === 0 && dr === dir && !target) return true;
-            // Initial two-square move
-            if (dc === 0 && dr === 2 * dir && !target && ((color === 'white' && fromR === 6) || (color === 'black' && fromR === 1))) {
-                if (!boardState[fromR + dir][fromC]) return true;
-            }
-            // Capture
-            if (absDc === 1 && dr === dir && target) return true;
-            return false;
-        }
-
-        if (p === 'r') {
-            if (dr !== 0 && dc !== 0) return false;
-            const stepR = dr === 0 ? 0 : dr / absDr;
-            const stepC = dc === 0 ? 0 : dc / absDc;
-            let currR = fromR + stepR;
-            let currC = fromC + stepC;
-            while (currR !== toR || currC !== toC) {
-                if (boardState[currR][currC]) return false;
-                currR += stepR;
-                currC += stepC;
-            }
-            return true;
-        }
-
-        if (p === 'n') {
-            return (absDr === 2 && absDc === 1) || (absDr === 1 && absDc === 2);
-        }
-
-        if (p === 'b') {
-            if (absDr !== absDc) return false;
-            const stepR = dr / absDr;
-            const stepC = dc / absDc;
-            let currR = fromR + stepR;
-            let currC = fromC + stepC;
-            while (currR !== toR || currC !== toC) {
-                if (boardState[currR][currC]) return false;
-                currR += stepR;
-                currC += stepC;
-            }
-            return true;
-        }
-
-        if (p === 'q') {
-            if (dr !== 0 && dc !== 0 && absDr !== absDc) return false;
-            const stepR = dr === 0 ? 0 : dr / absDr;
-            const stepC = dc === 0 ? 0 : dc / absDc;
-            let currR = fromR + stepR;
-            let currC = fromC + stepC;
-            while (currR !== toR || currC !== toC) {
-                if (boardState[currR][currC]) return false;
-                currR += stepR;
-                currC += stepC;
-            }
-            return true;
-        }
-
-        if (p === 'k') {
-            return absDr <= 1 && absDc <= 1;
-        }
-
-        return false;
-    };
-
-    const handleSquareClick = (r, c) => {
-        if (isGameOver || turn === 'black' || isSearching) return;
-
-        const piece = board[r][c];
-
-        if (selected) {
-            if (selected.r === r && selected.c === c) {
-                setSelected(null);
-                return;
-            }
-
-            if (isValidMove(selected.r, selected.c, r, c, board)) {
-                const newBoard = board.map(row => [...row]);
-                newBoard[r][c] = board[selected.r][selected.c];
-                newBoard[selected.r][selected.c] = '';
-
-                setBoard(newBoard);
-                setSelected(null);
-                setTurn('black');
-                setStatus("Opponent thinking...");
-
-                setTimeout(() => makeAIMove(newBoard), 1000);
-            } else {
-                // Invalid move - if user clicks another own piece, select that instead
-                if (piece && piece === piece.toUpperCase()) {
-                    setSelected({ r, c });
-                }
-            }
-        } else {
-            if (piece && piece === piece.toUpperCase()) {
-                setSelected({ r, c });
-            }
-        }
-    };
-
-    const makeAIMove = (currentBoard) => {
-        // Simple AI: Find all legal moves for black and pick one randomly
-        const legalMoves = [];
-        for (let fr = 0; fr < 8; fr++) {
-            for (let fc = 0; fc < 8; fc++) {
-                const piece = currentBoard[fr][fc];
-                if (piece && piece === piece.toLowerCase()) {
-                    for (let tr = 0; tr < 8; tr++) {
-                        for (let tc = 0; tc < 8; tc++) {
-                            if (isValidMove(fr, fc, tr, tc, currentBoard)) {
-                                legalMoves.push({ fr, fc, tr, tc });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (legalMoves.length === 0) {
+    const updateStatus = (currentGame) => {
+        if (currentGame.isCheckmate()) {
             setIsGameOver(true);
-            setStatus("Checkmate! You win!");
-            updateBalance(200);
+            if (currentGame.turn() === 'w') {
+                setStatus("Checkmate! You lose.");
+            } else {
+                setStatus("Checkmate! You win!");
+                updateBalance(200);
+            }
             return;
         }
 
-        const move = legalMoves[Math.floor(Math.random() * legalMoves.length)];
-        const newBoard = currentBoard.map(row => [...row]);
-        newBoard[move.tr][move.tc] = currentBoard[move.fr][move.fc];
-        newBoard[move.fr][move.fc] = '';
+        if (currentGame.isDraw() || currentGame.isStalemate() || currentGame.isThreefoldRepetition()) {
+            setIsGameOver(true);
+            setStatus("Game drawn!");
+            return;
+        }
 
-        setBoard(newBoard);
-        setTurn('white');
-        setStatus("Your turn (White)");
+        if (currentGame.isCheck()) {
+            setStatus("Check!");
+            return;
+        }
+
+        if (currentGame.turn() === 'w') {
+            setStatus("Your turn (White)");
+        } else {
+            setStatus("Opponent thinking...");
+        }
+    };
+
+    const makeAIMove = (currentGame) => {
+        if (currentGame.isGameOver()) return;
+
+        const moves = currentGame.moves();
+        if (moves.length === 0) return;
+
+        const move = moves[Math.floor(Math.random() * moves.length)];
+        currentGame.move(move);
+
+        setGame(new ChessJS(currentGame.fen()));
+        setBoard(currentGame.board());
+        updateStatus(currentGame);
+    };
+
+    const handleSquareClick = (r, c) => {
+        if (isGameOver || game.turn() === 'b' || isSearching) return;
+
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const square = files[c] + (8 - r);
+        const piece = game.get(square);
+
+        if (selectedSquare) {
+            if (selectedSquare === square) {
+                setSelectedSquare(null);
+                setPossibleMoves([]);
+                return;
+            }
+
+            // Try to move
+            try {
+                // If promotion is possible, auto-promote to queen for simplicity
+                const moves = game.moves({ square: selectedSquare, verbose: true });
+                const moveObj = moves.find(m => m.to === square);
+                
+                if (moveObj) {
+                    const gameCopy = new ChessJS(game.fen());
+                    gameCopy.move({
+                        from: selectedSquare,
+                        to: square,
+                        promotion: 'q'
+                    });
+
+                    setGame(gameCopy);
+                    setBoard(gameCopy.board());
+                    setSelectedSquare(null);
+                    setPossibleMoves([]);
+                    updateStatus(gameCopy);
+
+                    if (!gameCopy.isGameOver()) {
+                        setTimeout(() => makeAIMove(gameCopy), 1000);
+                    }
+                } else {
+                    // Invalid move
+                    if (piece && piece.color === 'w') {
+                        setSelectedSquare(square);
+                        setPossibleMoves(game.moves({ square, verbose: true }).map(m => m.to));
+                    } else {
+                        setSelectedSquare(null);
+                        setPossibleMoves([]);
+                    }
+                }
+            } catch (e) {
+                console.error("Invalid move", e);
+            }
+        } else {
+            if (piece && piece.color === 'w') {
+                setSelectedSquare(square);
+                setPossibleMoves(game.moves({ square, verbose: true }).map(m => m.to));
+            }
+        }
     };
 
     const resetGame = () => {
-        setBoard(INITIAL_BOARD);
-        setTurn('white');
+        const newGame = new ChessJS();
+        setGame(newGame);
+        setBoard(newGame.board());
+        setSelectedSquare(null);
+        setPossibleMoves([]);
         setStatus("Your turn (White)");
         setIsGameOver(false);
         setIsSearching(true);
         setTimeout(() => setIsSearching(false), 1500);
+    };
+
+    // Helper to get piece string for rendering
+    const getPieceDisplay = (p) => {
+        if (!p) return null;
+        return p.color === 'w' ? p.type.toUpperCase() : p.type.toLowerCase();
     };
 
     return (
@@ -228,38 +179,56 @@ const Chess = () => {
                         width: '100%'
                     }}>
                         {board.map((row, r) => (
-                            row.map((piece, c) => (
-                                <div
-                                    key={`${r}-${c}`}
-                                    onClick={() => handleSquareClick(r, c)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        position: 'relative',
-                                        boxShadow: selected?.r === r && selected?.c === c ? 'inset 0 0 0 4px rgba(155, 89, 182, 0.8)' : 'none',
-                                        borderRadius: '4px'
-                                    }}
-                                >
-                                    {piece && (
-                                        <span style={{
-                                            color: piece === piece.toUpperCase() ? '#ffffff' : '#1a1a1a',
-                                            fontSize: 'min(7vw, 40px)',
-                                            lineHeight: 1,
+                            row.map((piece, c) => {
+                                const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+                                const square = files[c] + (8 - r);
+                                const isSelected = selectedSquare === square;
+                                const isPossibleMove = possibleMoves.includes(square);
+                                const pStr = getPieceDisplay(piece);
+
+                                return (
+                                    <div
+                                        key={`${r}-${c}`}
+                                        onClick={() => handleSquareClick(r, c)}
+                                        style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            filter: piece === piece.toUpperCase() ? 'drop-shadow(0 2px 2px rgba(0,0,0,0.4))' : 'none',
-                                            userSelect: 'none',
-                                            transition: 'transform 0.2s ease',
-                                            zIndex: 2
-                                        }}>
-                                            {PIECE_ICONS[piece]}
-                                        </span>
-                                    )}
-                                </div>
-                            ))
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                            boxShadow: isSelected ? 'inset 0 0 0 4px rgba(155, 89, 182, 0.8)' : 'none',
+                                            borderRadius: '4px'
+                                        }}
+                                    >
+                                        {isPossibleMove && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                width: '30%',
+                                                height: '30%',
+                                                borderRadius: '50%',
+                                                backgroundColor: 'rgba(155, 89, 182, 0.6)',
+                                                zIndex: 1
+                                            }} />
+                                        )}
+                                        {pStr && (
+                                            <span style={{
+                                                color: piece.color === 'w' ? '#ffffff' : '#1a1a1a',
+                                                fontSize: 'min(7vw, 40px)',
+                                                lineHeight: 1,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                filter: piece.color === 'w' ? 'drop-shadow(0 2px 2px rgba(0,0,0,0.4))' : 'none',
+                                                userSelect: 'none',
+                                                transition: 'transform 0.2s ease',
+                                                zIndex: 2
+                                            }}>
+                                                {PIECE_ICONS[pStr]}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })
                         ))}
 
                         {isSearching && (
