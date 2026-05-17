@@ -30,9 +30,9 @@ const Layout = ({ children, showHeader = true }) => {
                     <header className="header" style={{ marginBottom: '2rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                             <Link to="/arcade" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <img src="/logo.png" alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '12px' }} />
+                                <img src="/logo.png" alt="Logo" style={{ height: '50px', width: 'auto' }} />
                                 <h1 className="logo" style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center' }}>
-                                    Zeal <video src="/logo-video.mp4" autoPlay loop muted playsInline className="arcade-logo-loop" style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '10px' }} />
+                                    Zeal <video src="/logo-video.mp4" autoPlay loop muted playsInline style={{ height: '24px', width: 'auto', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle' }} />
                                 </h1>
                             </Link>
 
