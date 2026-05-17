@@ -5,12 +5,18 @@ import Layout from '../components/Layout';
 
 const Signup = () => {
     const [username, setUsername] = useState('');
-    const { login, updateBalance } = useGame();
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const { login } = useGame();
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (username.trim()) {
+        if (username.trim() && password.trim()) {
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
             localStorage.removeItem('snake_highscore');
             localStorage.removeItem('arrowsLevel');
             login(username);
@@ -26,17 +32,17 @@ const Signup = () => {
                     <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Create Account</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Join the premium arcade experience</p>
                     
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                         <div style={{ textAlign: 'left' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Choose Username</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Username</label>
                             <input 
                                 type="text" 
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter your username"
+                                placeholder="Choose a username"
                                 style={{ 
                                     width: '100%', 
-                                    padding: '1rem', 
+                                    padding: '0.8rem 1rem', 
                                     borderRadius: '12px', 
                                     border: '1px solid var(--card-border)',
                                     background: 'rgba(155, 89, 182, 0.1)',
@@ -46,7 +52,45 @@ const Signup = () => {
                                 required
                             />
                         </div>
-                        <button type="submit" className="btn-primary" style={{ padding: '1rem' }}>Get Started</button>
+                        <div style={{ textAlign: 'left' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Password</label>
+                            <input 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Create a password"
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '0.8rem 1rem', 
+                                    borderRadius: '12px', 
+                                    border: '1px solid var(--card-border)',
+                                    background: 'rgba(155, 89, 182, 0.1)',
+                                    color: 'var(--text-primary)',
+                                    fontFamily: 'inherit'
+                                }}
+                                required
+                            />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Confirm Password</label>
+                            <input 
+                                type="password" 
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Confirm your password"
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '0.8rem 1rem', 
+                                    borderRadius: '12px', 
+                                    border: '1px solid var(--card-border)',
+                                    background: 'rgba(155, 89, 182, 0.1)',
+                                    color: 'var(--text-primary)',
+                                    fontFamily: 'inherit'
+                                }}
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn-primary" style={{ padding: '1rem', marginTop: '0.5rem' }}>Get Started</button>
                     </form>
                     
                     <p style={{ marginTop: '2rem', color: 'var(--text-secondary)' }}>
